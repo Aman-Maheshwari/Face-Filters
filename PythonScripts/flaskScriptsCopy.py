@@ -191,68 +191,83 @@ def get_captcha_text_from_captcha_image(captcha_path):
 def cartoon (image):
 	# import cv2
 	print(image)
-	img = cv2.imread(image)	
-	num_down = 3      	# number of downsampling steps
-	num_bilateral = 18  # number of bilateral filtering steps
-
-	img_rgb = img
-	# downsample image using Gaussian pyramid
-	
-	img_color = img_rgb
-	for _ in range(num_down):
-		img_color = cv2.pyrDown(img_color)
-
-	# repeatedly apply small bilateral filter instead of
-	# applying one large filter
-	for _ in range(num_bilateral):
-		img_color = cv2.bilateralFilter(img_color, d=9,
-										sigmaColor=9,
-										sigmaSpace=7)
-
-	# upsample image to original size
-	for _ in range(num_down):
-		img_color = cv2.pyrUp(img_color)
-
-	img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
-	img_blur = cv2.medianBlur(img_gray, 5)
-
-	img_edge = cv2.adaptiveThreshold(img_blur, 255,
-									cv2.ADAPTIVE_THRESH_MEAN_C,
-									cv2.THRESH_BINARY,
-									blockSize=9,
-									C=2)
-
-	# convert back to color, bit-AND with color image
-	img_edge = cv2.cvtColor(img_edge, cv2.COLOR_GRAY2RGB)
-	img_cartoon = cv2.bitwise_and(img_color, img_edge)
-
-	# display
-	imS = cv2.resize(img_cartoon, (960, 540)) 
-	cv2.imshow("cartoon", imS)
-	return img_cartoon
-
-def sketch(frame):	
-	print(frame)
-	img = cv2.imread(frame)
-	res , dst_color = cv2.pencilSketch(img, sigma_s=30, sigma_r=0.05, shade_factor=0.02)
-	res = cv2.resize(res, (960, 540)) 
-	cv2.imshow("Frame",res)
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
-	return res
-
-
-def oilPaint(image):
 	img = cv2.imread(image)
-
-	#first numeric argumet ko variable rakhna hai !! app mai ... jitna jyda utnaa jyda stroke hoga
-	#second numeric argument ko variable rakhna hai !! app mai ... jinta jya uthna false counters aaengy 
-	res = cv2.xphoto.oilPainting(img, 38, 5)
+	res , dst_color = cv2.pencilSketch(img, sigma_s=30, sigma_r=0.05, shade_factor=0.02)
+	# res = cv2.xphoto.oilPainting(img, 38, 1)
 	res = cv2.resize(res, (960, 540)) 
 	cv2.imshow("Frame",res)
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
 	return res
+	# num_down = 3      # number of downsampling steps
+	# num_bilateral = 18  # number of bilateral filtering steps
+
+	# img_rgb = image
+
+	# # downsample image using Gaussian pyramid
+	# img_color = img_rgb
+	# for _ in range(num_down):
+	# 	img_color = cv2.pyrDown(img_color)
+
+	# # repeatedly apply small bilateral filter instead of
+	# # applying one large filter
+	# for _ in range(num_bilateral):
+	# 	img_color = cv2.bilateralFilter(img_color, d=9,
+	# 									sigmaColor=9,
+	# 									sigmaSpace=7)
+
+	# # upsample image to original size
+	# for _ in range(num_down):
+	# 	img_color = cv2.pyrUp(img_color)
+
+	# img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
+	# img_blur = cv2.medianBlur(img_gray, 5)
+
+	# img_edge = cv2.adaptiveThreshold(img_blur, 255,
+	# 								cv2.ADAPTIVE_THRESH_MEAN_C,
+	# 								cv2.THRESH_BINARY,
+	# 								blockSize=9,
+	# 								C=2)
+
+	# 								# convert back to color, bit-AND with color image
+	# img_edge = cv2.cvtColor(img_edge, cv2.COLOR_GRAY2RGB)
+	# img_cartoon = cv2.bitwise_and(img_color, img_edge)
+
+	# # display
+	# imS = cv2.resize(img_cartoon, (960, 540)) 
+	# cv2.imshow("cartoon", imS)
+	# return img_cartoon
+
+
+highThresh	= 0.4
+lowThresh		= 0.1
+def sobel (img):
+	'''
+	Detects edges using sobel kernel
+	'''
+	opImgx		= cv2.Sobel(img,cv2.CV_8U,0,1,ksize=5)	#detects horizontal edges
+	opImgy		= cv2.Sobel(img,cv2.CV_8U,1,0,ksize=5)	#detects vertical edges
+	#combine both edges
+	return cv2.bitwise_or(opImgx,opImgy)	#does a bitwise OR of pixel values at each pixel
+def sketch(frame):	
+	#Blur it to remove noise
+	frame		= cv2.GaussianBlur(frame,(5,5),cv2.BORDER_DEFAULT)
+	
+	#make a negative image
+	invImg	= 255-frame
+	
+	#Detect edges from the input image and its negative
+	edgImg0		= sobel(frame)
+	edgImg1		= sobel(invImg)
+	edgImg		= cv2.addWeighted(edgImg0,1,edgImg1,1,0)	#different weights can be tried too
+	
+	#Invert the image back
+	opImg= 255-edgImg
+	# imS = cv2.resize(opImg, (960, 540)) 
+	# cv2.imshow ('imagee',imS)
+	# cv2.waitKey(0)
+	# cv2.destroyAllWindows()
+	return opImg
 
 
 def dog(filename):	
@@ -364,6 +379,27 @@ def Pointillism(image):
 	cv2.waitKey(0)
 	return res
 
+# @app.route('/',methods=['POST'])
+# def getDATA():
+# 	x= request.json['base64String']
+# 	height = request.json['height']
+# 	width = request.json['width']
+# 	filename = "reconstructed.jpg"
+# 	img = imread(io.BytesIO(base64.b64decode(x)))
+# 	cv2_img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+# 	filename = "reconstructed.jpg"
+# 	cv2.imwrite(filename, cv2_img)
+# 	imS = cv2.resize(cv2_img, (width, height)) 
+# 	cv2.imshow ('imagee',imS)
+# 	cv2.waitKey(0)
+# 	cv2.destroyAllWindows()
+# 	opImg = cartoon(filename)
+# 	op2_img = cv2.cvtColor(opImg, cv2.COLOR_RGB2BGR)
+# 	filename = "reconstructed1.jpg"
+# 	cv2.imwrite(filename, opImg)
+# 	cv2.imshow ('',opImg)
+# 	return send_file(filename,as_attachment=True,mimetype='image/jpg')
+
 
 @app.route('/watercolour',methods=['POST'])
 def getDATA():
@@ -386,7 +422,7 @@ def getDATA():
 	cv2.imshow ('',opImg)
 	return send_file(filename,as_attachment=True,mimetype='image/jpg')
 
-@app.route('/pencilsketchBW',methods = ['POST'])
+@app.route('/pencil',methods = ['POST'])
 def PencilSketch():
 		x=request.json['base64String']
 		img = imread(io.BytesIO(base64.b64decode(x)))
@@ -395,27 +431,23 @@ def PencilSketch():
 		cv2.imwrite(filename, cv2_img)
 		imS = cv2.resize(cv2_img, (960, 540)) 
 		cv2.imshow ('imagee',imS)
-		opImg = sketch(filename)
+		# plt.show()
+		# cv2.waitKey(0)
+		# cv2.destroyAllWindows()
+
+		opImg = sketch(img)
 		op2_img = cv2.cvtColor(opImg, cv2.COLOR_RGB2BGR)
 		filename = "reconstructed1.jpg"
 		cv2.imwrite(filename, op2_img)
-		return send_file(filename,as_attachment=True,mimetype='image/jpg')
 
-
-@app.route('/oilpaint',methods = ['POST'])
-def OilPaint():
-		x=request.json['base64String']
-		img = imread(io.BytesIO(base64.b64decode(x)))
-		cv2_img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-		filename = "reconstructed.jpg"
-		cv2.imwrite(filename, cv2_img)
-		imS = cv2.resize(cv2_img, (960, 540)) 
-		cv2.imshow ('imagee',imS)
-		opImg = oilPaint(filename)
-		# op2_img = cv2.cvtColor(opImg, cv2.COLOR_RGB2BGR)
-		filename = "reconstructed1.jpg"
-		cv2.imwrite(filename, opImg)
+		# cv2.imshow ('',opImg)
+		# b64_bytes = base64.b64encode(opImg)
+		# b64_string = b64_bytes.decode()
+		# print(sys.getsizeof(b64_string))
+		# print(b64_string)
+		# print(x)
 		return send_file(filename,as_attachment=True,mimetype='image/jpg')
+		# return json.dumps({'file_id': b64_string ,'filename': "record.filename" , 'links_to' : "record.links_to"})
 
 
 @app.route('/ImageToText',methods=['POST'])

@@ -6,7 +6,6 @@ import {
   Image
 } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
 import AvailableFiltersStack from './AvailableFiltersStack'
 import Filters from './Filters'
 const Tab = createBottomTabNavigator();
@@ -36,7 +35,7 @@ export default class Home extends React.Component{
                 // }}
               >
                 <Tab.Screen name="Choose Filters" component={AvailableFiltersStack} />
-                <Tab.Screen name ="Try Filter" component={Filters} />
+                <Tab.Screen name ="Filters" component={Filters} />
               </Tab.Navigator>
           );
     }

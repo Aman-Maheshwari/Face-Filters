@@ -9,6 +9,8 @@ import {
 import ImgToBase64 from 'react-native-image-base64';
 import ImagePicker from 'react-native-image-picker'
 import ResponseWaitLoader from './ResponseWaitLoader'
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+ 
 export default class Appp extends React.Component {
     constructor(props) {
         super(props);
@@ -26,13 +28,13 @@ export default class Appp extends React.Component {
         ImgToBase64.getBase64String(imageuri)
         .then(async (base64String) => {
                 // console.log(base64String);       
-                await fetch('http://127.0.0.1:5000/' + effect.effect, {
-                    method: 'POST',
+                var cartoon = await fetch('http://127.0.0.1:5000/' + effect.effect, {
+                    method:'POST',
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
+                    body:JSON.stringify({
                         base64String: base64String,
                         width: 100,
                         height: 100
