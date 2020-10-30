@@ -4,66 +4,18 @@ import Filters from './Filters'
 import Slider from '@react-native-community/slider'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { FlatList } from 'react-native-gesture-handler';
+import * as effects from './EffectsName'
 
 export default class AvailableFiltersStack extends React.Component {
     constructor(props) {
-        const effects = [
-            {
-                id: 1,
-                title: "Pencil Sketch B/W",
-                effect: "pencilsketch",
-                tap: false,
-                InnerPropertyexist: true
-            },
-            {
-                id: 2,
-                title: "Water Color",
-                effect: "watercolour",
-                tap: false,
-                InnerPropertyexist: true
-            },
-            {
-                id: 3,
-                title: "Oil Paint",
-                effect: "oilpaint",
-                tap: false,
-                InnerPropertyexist: true
-            },
-            {
-                id: 4,
-                title: "Pointlissim",
-                effect: "pointlissim",
-                tap: false,
-                InnerPropertyexist: true
-            },
-            {
-                id: 5,
-                title: "Pencil Sketch colour",
-                effect: "pencilsketchColor",
-                tap: false,
-                InnerPropertyexist: true
-            },
-            {
-                id: 6,
-                title: "Details",
-                effect: "details",
-                tap: false,
-                InnerPropertyexist: true
-            }
-        ];
         super(props);
         this.state = {
-            effects: effects,
+            effects:effects.default,
             pencil_shade_value: 0.01,
             tap: false,
             refresh: false
         }
-
     }
-    componentDidMount() {
-
-    }
-
     change(value) {
         this.setState(() => {
             return {
@@ -72,7 +24,7 @@ export default class AvailableFiltersStack extends React.Component {
         });
     }
 
-    render() {
+    render() {        
         const Item = ({ item, index }) => {
             return (
                 <View>
@@ -86,26 +38,32 @@ export default class AvailableFiltersStack extends React.Component {
                         </TouchableOpacity>
 
                         :
-
-                        <TouchableOpacity
-                            onPress={() => updateTap({ item, index })}
-                            style={styles.FlatlistElement}
-                        >
-                            <View style={styles.applyEffect}>
+                        <View style={styles.applyEffect}>
+                            <TouchableOpacity
+                                onPress={() => updateTap({ item, index })}
+                                style={styles.FlatlistElement}
+                            >
                                 <Text>
                                     {item.title}
                                 </Text>
+                                <Text>{this.state.pencil_shade_value}</Text>
+                                <Slider
+                                    step={0.01}
+                                    maximumValue={0.1}
+                                    onValueChange={this.change.bind(this)}
+                                    value={this.state.pencil_shade_value}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{justifyContent:"center",marginLeft:-15}}
+                            onPress={()=>{
+                                this.props.navigation.navigate('Filters',{
+                                    effect:item.effect,
+                                    // bg_image:item.background
+                                })
+                            }}>
                                 <Text>apply effect</Text>
-                            </View>
-               
-                            <Text>{this.state.pencil_shade_value}</Text>
-                            <Slider
-                                step={0.01}
-                                maximumValue={0.1}
-                                onValueChange={this.change.bind(this)}
-                                value={this.state.pencil_shade_value}
-                            />
-                        </TouchableOpacity>
+                            </TouchableOpacity>
+                        </View>
 
                     }
 
@@ -137,8 +95,6 @@ export default class AvailableFiltersStack extends React.Component {
                 </View>
             )
         }
-
-
         return (
             <View style={styles.container}>
                 <View style={styles.upperContainer}>
@@ -166,45 +122,41 @@ const styles = StyleSheet.create({
         marginVertical: hp('5%'),
         elevation: 0.5,
     },
-    upperContainer:{
-        flex:0.4
+    upperContainer: {
+        flex: 0.4
     },
     FlatList_MainContainer: {
-        flex:0.6
+        flex: 0.6
     },
     FlatList_InnerContainer: {
         height: hp('10%'),
         marginVertical: hp('1%'),
         marginHorizontal: wp('5%'),
-        borderRadius: wp('5%'),
+        borderRadius: wp('2%'),
         borderColor: "#65E4D7",
         borderWidth: wp('0.5%'),
         flexDirection: "row",
     },
     id: {
         color: "black",
-        elevation:2,
-        textAlign:"center",
-        borderRadius:wp('7.5%')/2,
-        width:wp('7.5%'),
-        height:wp('7.5%'),
-        backgroundColor:"white",
-        marginVertical:hp('2.5%'),
-        marginLeft:-13,
-        borderColor:"#65E4D7",
+        elevation: 2,
+        textAlign: "center",
+        borderRadius: wp('7.5%') / 2,
+        width: wp('7.5%'),
+        height: wp('7.5%'),
+        backgroundColor: "white",
+        marginVertical: hp('2.5%'),
+        marginLeft: -13,
+        borderColor: "#65E4D7",
         borderWidth: wp('0.5%'),
-
     },
-    applyEffect:{
-        flexDirection:"row",
-        justifyContent:"space-between",
-        backgroundColor:"green"
+    applyEffect: {
+        flexDirection: "row",     
     },
     FlatlistElement: {
         marginHorizontal: wp('8%'),
         marginVertical: hp('1%'),
-        width: wp('70%'),
-        flexDirection:"column",
-        backgroundColor:"pink"
+        width: wp('50%'),
+        flexDirection: "column",
     }
 })

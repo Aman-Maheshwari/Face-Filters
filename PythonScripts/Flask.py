@@ -152,49 +152,12 @@ def get_captcha_text_from_captcha_image(captcha_path):
 	return alphanumeric_text
 
 
-
-# def FindObject(img):
-# 	img = cv2.imread(img,cv2.IMREAD_COLOR)
-# 	img1=img
-# 	grayscaled = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-# 	th = cv2.adaptiveThreshold(grayscaled, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 115, 1)
-# 	kernel = np.ones((5,5),np.float32)
-# 	opening = cv2.morphologyEx(th, cv2.MORPH_OPEN, kernel)
-# 	blur=cv2.bilateralFilter(opening,19,75,75)
-
-# 	dilate=cv2.dilate(blur,kernel,iterations=1)
-
-# 	cv2.namedWindow('Blurring',cv2.WINDOW_NORMAL)
-# 	cv2.resizeWindow('Blurring', 800,600)
-
-# 	edged = cv2.Canny(dilate, 50, 150) #canny edge detection
-# 	cv2.namedWindow('Canny',cv2.WINDOW_NORMAL)
-# 	cv2.resizeWindow('Canny', 800,600)
-# 	cv2.imshow('Canny',edged)
-
-
-# 	cv2.imshow('Blurring',dilate)
-
-# 	contours, hierarchy = cv2.findContours(edged,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-
-# 	for contour in contours:
-# 		epsilon = 0.01*cv2.arcLength(contour,True)
-# 		approx = cv2.approxPolyDP(contour,epsilon,True)
-# 		cv2.drawContours(img1,contour,-1,(255,0,0),4)
-# 	cv2.namedWindow('final',cv2.WINDOW_NORMAL)
-# 	cv2.resizeWindow('final', 800,600)
-# 	# cv2.imshow('final',img1)
-# 	cv2.waitKey(0)
-# 	cv2.destroyAllWindows()
-
-
 def cartoon (image):
 	# import cv2
 	print(image)
 	img = cv2.imread(image)	
 	num_down = 3      	# number of downsampling steps
 	num_bilateral = 18  # number of bilateral filtering steps
-
 	img_rgb = img
 	# downsample image using Gaussian pyramid
 	
@@ -228,30 +191,35 @@ def cartoon (image):
 
 	# display
 	imS = cv2.resize(img_cartoon, (960, 540)) 
-	cv2.imshow("cartoon", imS)
+	# cv2.imshow("cartoon", imS)
 	return img_cartoon
 
 def sketch(frame):	
 	print(frame)
 	img = cv2.imread(frame)
-	res , dst_color = cv2.pencilSketch(img, sigma_s=30, sigma_r=0.05, shade_factor=0.02)
+	res , dst_color = cv2.pencilSketch(img, sigma_s=30, sigma_r=0.03, shade_factor=0.04)
 	res = cv2.resize(res, (960, 540)) 
-	cv2.imshow("Frame",res)
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
 	return res
 
 
 def oilPaint(image):
 	img = cv2.imread(image)
-
 	#first numeric argumet ko variable rakhna hai !! app mai ... jitna jyda utnaa jyda stroke hoga
 	#second numeric argument ko variable rakhna hai !! app mai ... jinta jya uthna false counters aaengy 
 	res = cv2.xphoto.oilPainting(img, 38, 5)
 	res = cv2.resize(res, (960, 540)) 
-	cv2.imshow("Frame",res)
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
+	return res
+
+def Detail(image):
+	img = cv2.imread(image)
+	res = cv2.detailEnhance(img, sigma_s=10, sigma_r=0.6)
+	res = cv2.resize(res, (760,540))
+	return res
+
+def EdgePreserving(image):
+	img = cv2.imread(image)
+	res = cv2.edgePreservingFilter(img, flags=1, sigma_s=60, sigma_r=0.4)
+	res = cv2.resize(res,(760,540))
 	return res
 
 
@@ -282,9 +250,9 @@ def dog(filename):
 		print(frame)
 	print("3\n")
 	frame = cv2.resize(frame, (160, 200)) 
-	cv2.imshow('image',frame)
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
+	# cv2.imshow('image',frame)
+	# cv2.waitKey(0)
+	# cv2.destroyAllWindows()
 	return frame
 
 
@@ -376,46 +344,73 @@ def getDATA():
 	filename = "reconstructed.jpg"
 	cv2.imwrite(filename, cv2_img)
 	imS = cv2.resize(cv2_img, (width, height)) 
-	cv2.imshow ('imagee',imS)
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
 	opImg = cartoon(filename)
 	op2_img = cv2.cvtColor(opImg, cv2.COLOR_RGB2BGR)
 	filename = "reconstructed1.jpg"
 	cv2.imwrite(filename, opImg)
-	cv2.imshow ('',opImg)
 	return send_file(filename,as_attachment=True,mimetype='image/jpg')
 
 @app.route('/pencilsketchBW',methods = ['POST'])
 def PencilSketch():
-		x=request.json['base64String']
-		img = imread(io.BytesIO(base64.b64decode(x)))
-		cv2_img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-		filename = "reconstructed.jpg"
-		cv2.imwrite(filename, cv2_img)
-		imS = cv2.resize(cv2_img, (960, 540)) 
-		cv2.imshow ('imagee',imS)
-		opImg = sketch(filename)
-		op2_img = cv2.cvtColor(opImg, cv2.COLOR_RGB2BGR)
-		filename = "reconstructed1.jpg"
-		cv2.imwrite(filename, op2_img)
-		return send_file(filename,as_attachment=True,mimetype='image/jpg')
+	x=request.json['base64String']
+	img = imread(io.BytesIO(base64.b64decode(x)))
+	cv2_img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+	filename = "reconstructed.jpg"
+	cv2.imwrite(filename, cv2_img)
+	imS = cv2.resize(cv2_img, (960, 540)) 
+	opImg = sketch(filename)
+	op2_img = cv2.cvtColor(opImg, cv2.COLOR_RGB2BGR)
+	filename = "reconstructed1.jpg"
+	cv2.imwrite(filename, op2_img)
+	return send_file(filename,as_attachment=True,mimetype='image/jpg')
 
 
 @app.route('/oilpaint',methods = ['POST'])
 def OilPaint():
-		x=request.json['base64String']
-		img = imread(io.BytesIO(base64.b64decode(x)))
-		cv2_img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-		filename = "reconstructed.jpg"
-		cv2.imwrite(filename, cv2_img)
-		imS = cv2.resize(cv2_img, (960, 540)) 
-		cv2.imshow ('imagee',imS)
-		opImg = oilPaint(filename)
-		# op2_img = cv2.cvtColor(opImg, cv2.COLOR_RGB2BGR)
-		filename = "reconstructed1.jpg"
-		cv2.imwrite(filename, opImg)
-		return send_file(filename,as_attachment=True,mimetype='image/jpg')
+	x=request.json['base64String']
+	img = imread(io.BytesIO(base64.b64decode(x)))
+	cv2_img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+	filename = "reconstructed.jpg"
+	cv2.imwrite(filename, cv2_img)
+	imS = cv2.resize(cv2_img, (960, 540)) 
+	opImg = dog(filename)
+	filename = "reconstructed1.jpg"
+	cv2.imwrite(filename, opImg)
+	return send_file(filename,as_attachment=True,mimetype='image/jpg')
+
+@app.route('/details',methods=['POST'])
+def Details():
+	x= request.json['base64String']
+	height = request.json['height']
+	width = request.json['width']
+	filename = "reconstructed.jpg"
+	img = imread(io.BytesIO(base64.b64decode(x)))
+	cv2_img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+	filename = "reconstructed.jpg"
+	cv2.imwrite(filename, cv2_img)
+	imS = cv2.resize(cv2_img, (width, height)) 
+	opImg = Detail(filename)
+	op2_img = cv2.cvtColor(opImg, cv2.COLOR_RGB2BGR)
+	filename = "reconstructed1.jpg"
+	cv2.imwrite(filename, opImg)
+	return send_file(filename,as_attachment=True,mimetype='image/jpg')
+
+@app.route('/edgePreserving',methods=['POST'])
+def EdgePreserve():
+	x= request.json['base64String']
+	height = request.json['height']
+	width = request.json['width']
+	filename = "reconstructed.jpg"
+	img = imread(io.BytesIO(base64.b64decode(x)))
+	cv2_img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+	filename = "reconstructed.jpg"
+	cv2.imwrite(filename, cv2_img)
+	imS = cv2.resize(cv2_img, (width, height)) 
+	opImg = EdgePreserving(filename)
+	op2_img = cv2.cvtColor(opImg, cv2.COLOR_RGB2BGR)
+	filename = "reconstructed1.jpg"
+	cv2.imwrite(filename, opImg)
+	return send_file(filename,as_attachment=True,mimetype='image/jpg')
 
 
 @app.route('/ImageToText',methods=['POST'])

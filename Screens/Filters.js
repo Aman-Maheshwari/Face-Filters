@@ -3,14 +3,17 @@ import {
     View,
     Text,
     TouchableOpacity,
-    Image
+    Image,
+    ImageBackground,
+    StyleSheet,
+    Dimensions
 } from 'react-native';
 
 import ImgToBase64 from 'react-native-image-base64';
 import ImagePicker from 'react-native-image-picker'
 import ResponseWaitLoader from './ResponseWaitLoader'
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
- 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 export default class Appp extends React.Component {
     constructor(props) {
         super(props);
@@ -18,23 +21,23 @@ export default class Appp extends React.Component {
             imgurii: '',
             width: null,
             height: null,
-            ApiResponse:false,
-            Haveimage:false
+            ApiResponse: false,
+            Haveimage: false
         }
     }
 
     callFunctionAPI = (imageuri, effect) => {
         console.log("effect = ", effect);
         ImgToBase64.getBase64String(imageuri)
-        .then(async (base64String) => {
+            .then(async (base64String) => {
                 // console.log(base64String);       
-                var cartoon = await fetch('http://127.0.0.1:5000/' + effect.effect, {
-                    method:'POST',
+                var cartoon = await fetch('http://127.0.0.1:5000/' + effect, {
+                    method: 'POST',
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json'
                     },
-                    body:JSON.stringify({
+                    body: JSON.stringify({
                         base64String: base64String,
                         width: 100,
                         height: 100
@@ -47,7 +50,7 @@ export default class Appp extends React.Component {
                         fileReaderInstance.onload = () => {
                             this.setState({
                                 imgurii: fileReaderInstance.result,
-                                ApiResponse:true
+                                ApiResponse: true
                             })
                         }
                     });
@@ -116,8 +119,8 @@ export default class Appp extends React.Component {
         fetchImage.then(async (result) => {
             console.log("Promise Working ", result)
             this.setState({
-                Haveimage:true,
-                ApiResponse:false
+                Haveimage: true,
+                ApiResponse: false
             })
             Image.getSize(result, (width, height) => {
                 this.setState({
@@ -126,17 +129,20 @@ export default class Appp extends React.Component {
                 });                
                 this.callFunctionAPI(result, effect)
             }); 
+            // this.callFunctionAPI(result, effect)
         }).catch((error) => {
             console.log(error);
         })
     }
 
     render() {
-        var effect = this.props.route.params === undefined ? 'watercolour' :  this.props.route.params
+        var effect = this.props.route.params.effect === undefined ? 'watercolour' : this.props.route.params.effect
+        // var background = this.props.route.params.bg_image === undefined ? '' : this.props.route.params.bg_image
         console.log(effect);
-        
+
         return (
             <View style={{ flex: 1 }}>
+                {/* <ImageBackground source={require('../Assets/' + background)} style={styles.backgroundImage} /> */}
                 {this.state.Haveimage === false ?
                     <View style={{ alignSelf: "center", marginVertical: 150 }}>
                         {console.log("inside if ")
@@ -199,14 +205,13 @@ export default class Appp extends React.Component {
 
                         <View style={{ flex: 0.9, }}>
                             {this.state.ApiResponse == true ?
-                            <Image source={{ uri: this.state.imgurii, }} style={{ height: 350, width: 350 }} /> 
-                            // <ResponseWaitLoader/>
-                            :
-                            <View style={{height:350,width:350}}>
-                            <ResponseWaitLoader/>
-                            </View>
+                                <Image source={{ uri: this.state.imgurii, }} style={{ height: 350, width: 350 }} />
+                                :
+                                <View style={{ height: 350, width: 350 }}>
+                                    <ResponseWaitLoader />
+                                </View>
                             }
-                            
+
                         </View>
 
                     </View>
@@ -216,4 +221,14 @@ export default class Appp extends React.Component {
     }
 };
 
+const styles = StyleSheet.create({
+    backgroundImage: {
+        flex: 1,
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        justifyContent: "center",
+        alignItems: "center",
+        opacity: 0.7
+    },
+})
 
