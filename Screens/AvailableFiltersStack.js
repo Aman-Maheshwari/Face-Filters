@@ -88,10 +88,18 @@ export default class AvailableFiltersStack extends React.Component {
             let { effects } = this.state;
             let target = effects[index]
             target.tap = !target.tap;
+
+            effects.forEach((element,i) => {
+                if(i!=index){
+                    element.tap = false
+                }
+            });
+            
             effects[index] = target
             this.setState({
                 refresh: !this.state.refresh,
-                effects: effects
+                effects: effects,
+                parameter_value:item.initial_param
             })
 
         }
@@ -109,8 +117,8 @@ export default class AvailableFiltersStack extends React.Component {
         }
         return (
             <View style={styles.container}>
-                <View style={styles.upperContainer}>
-                </View>
+                {/* <View style={styles.upperContainer}>
+                </View> */}
                 <View style={styles.FlatList_MainContainer}>
                     <FlatList
                         data={this.state.effects}
@@ -138,7 +146,7 @@ const styles = StyleSheet.create({
         flex: 0.4
     },
     FlatList_MainContainer: {
-        flex: 0.6,
+        flex: 1,
     },
     FlatList_InnerContainer: {
         height: hp('13%'),

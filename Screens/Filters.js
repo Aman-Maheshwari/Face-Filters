@@ -26,11 +26,11 @@ export default class Appp extends React.Component {
             networkError:false,
             bg_image_array:[
                 require("../Assets/pencil-sketch-BW.jpg"),
-                require("../Assets/watercolour.png"),
+                require("../Assets/watercolour.jpg"),
                 require("../Assets/Oil_paint.jpg"),
                 require("../Assets/Pointlissim.jpg"),
                 require("../Assets/pencil-sketch-Colour.jpg"),
-                // require("../Assets/"),
+                require("../Assets/cartoon.png"),
                 // require("../Assets/"),
                 // require("../Assets/"),
                 // require("../Assets/"),
@@ -61,7 +61,7 @@ export default class Appp extends React.Component {
         ImgToBase64.getBase64String(imageuri)
             .then(async (base64String) => {
                 // console.log(base64String);       
-                var cartoon = await fetch('http://127.0.0.1:5000/' + effect, {
+                var cartoon = await fetch('http://75ce880ca5ec.ngrok.io/' + effect, {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
@@ -73,7 +73,7 @@ export default class Appp extends React.Component {
                     })
                 }).then(response => response.blob())
                     .then(images => {
-                        // console.log("inside", images);
+                        console.log("inside", images);
                         const fileReaderInstance = new FileReader();
                         fileReaderInstance.readAsDataURL(images);
                         fileReaderInstance.onload = () => {

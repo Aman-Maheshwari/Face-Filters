@@ -28,7 +28,7 @@ export default class Home extends React.Component{
                       ? 'hand-pointer'
                       : 'hand-pointer';
                   } else if (route.name === 'Apply') {
-                    iconName = focused ? 'hand-pointer' : 'hand-pointer';
+                    iconName = focused ? 'paperclip' : 'paperclip';
                   }
               
                   // You can return any component that you like here!
