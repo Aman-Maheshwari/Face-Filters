@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image
-} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AvailableFiltersStack from './AvailableFiltersStack'
 import Filters from './Filters'
@@ -24,19 +19,32 @@ export default class Home extends React.Component{
         //by default one is choosen at random and others are in stack     
         return (
               <Tab.Navigator
-                // initialRouteName="OilPaint"
-                // backBehavior={"none"}
-                // tabBarOptions={{
-                //     activeTintColor: '#e91e63',
-                //     tabStyle: {
-                //         width: 'auto',
-                //         height: 'auto',
-                //     },
-                // }}
+              screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                  let iconName;
+              
+                  if (route.name === 'Choose') {
+                    iconName = focused
+                      ? 'hand-pointer'
+                      : 'hand-pointer';
+                  } else if (route.name === 'Apply') {
+                    iconName = focused ? 'hand-pointer' : 'hand-pointer';
+                  }
+              
+                  // You can return any component that you like here!
+                  return <Icon name={iconName} size={size} color={color} />;
+                },
+              })}
+              tabBarOptions={{
+                activeTintColor: 'tomato',
+                inactiveTintColor: 'gray',
+              }}
               >
-                <Tab.Screen name="Choose Filters" component={AvailableFiltersStack} />
-                <Tab.Screen name ="Filters" component={Filters} />
+                <Tab.Screen name="Choose" component={AvailableFiltersStack} />
+                <Tab.Screen name ="Apply" component={Filters} />
               </Tab.Navigator>
           );
     }
 }
+
+

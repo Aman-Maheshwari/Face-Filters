@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Filters from './Filters'
 import Slider from '@react-native-community/slider'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { FlatList } from 'react-native-gesture-handler';
@@ -10,58 +9,71 @@ export default class AvailableFiltersStack extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            effects:effects.default,
-            pencil_shade_value: 0.01,
+            effects: effects.default,
+            parameter_value: 0.01,
             tap: false,
-            refresh: false
+            refresh: false,
+            oil_paint_stroke: 20,
+            oil_paint_false_countours: 5
         }
     }
     change(value) {
         this.setState(() => {
             return {
-                pencil_shade_value: parseFloat(value)
+                parameter_value: parseFloat(value)
             };
         });
     }
 
-    render() {        
+    render() {
         const Item = ({ item, index }) => {
             return (
-                <View>
+                <View >
                     {item.tap == false ?
                         <TouchableOpacity
                             onPress={() => updateTap({ item, index })}
-                            style={styles.FlatlistElement}>
-                            <Text>
+                            style={styles.FlatlistElement_before}>
+                            <Text style={styles.TextStyle_before}>
                                 {item.title}
                             </Text>
                         </TouchableOpacity>
 
                         :
+
                         <View style={styles.applyEffect}>
                             <TouchableOpacity
                                 onPress={() => updateTap({ item, index })}
-                                style={styles.FlatlistElement}
+                                style={styles.FlatlistElement_after}
                             >
-                                <Text>
+                                <Text style={styles.TextStyle_before}>
                                     {item.title}
                                 </Text>
-                                <Text>{this.state.pencil_shade_value}</Text>
-                                <Slider
-                                    step={0.01}
-                                    maximumValue={0.1}
-                                    onValueChange={this.change.bind(this)}
-                                    value={this.state.pencil_shade_value}
-                                />
+                                {item.InnerPropertyexist === true ?
+                                    <View>
+                                        <Text style={styles.TextStyle_after}>{item.parameterName}</Text>
+
+                                        <Text style={styles.TextStyle_after}>{this.state.parameter_value}</Text>
+                                        <Slider
+                                            step={item.parameterStep}
+                                            maximumValue={item.maximumParameterValue}
+                                            onValueChange={this.change.bind(this)}
+                                            value={this.state.parameter_value}
+                                        />
+                                    </View>
+                                    :
+                                    null
+                                }
                             </TouchableOpacity>
-                            <TouchableOpacity style={{justifyContent:"center",marginLeft:-15}}
-                            onPress={()=>{
-                                this.props.navigation.navigate('Filters',{
-                                    effect:item.effect,
-                                    // bg_image:item.background
-                                })
-                            }}>
-                                <Text>apply effect</Text>
+                            <TouchableOpacity style={{ justifyContent: "center", marginLeft: -20 }}
+                                onPress={() => {
+                                    this.props.navigation.navigate('Apply', {
+                                        effect: item.effect,
+                                        bg_image: item.background,
+                                        id: item.id,
+                                        parameter:this.state.parameter_value
+                                    })
+                                }}>
+                                <Text style={styles.TextStyle_after_for_applyEffect}>apply effect</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -116,7 +128,7 @@ export default class AvailableFiltersStack extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#E8EEEE"
+        backgroundColor: "#FFFAF1"
     },
     container_effect: {
         marginVertical: hp('5%'),
@@ -126,14 +138,14 @@ const styles = StyleSheet.create({
         flex: 0.4
     },
     FlatList_MainContainer: {
-        flex: 0.6
+        flex: 0.6,
     },
     FlatList_InnerContainer: {
-        height: hp('10%'),
+        height: hp('13%'),
         marginVertical: hp('1%'),
         marginHorizontal: wp('5%'),
         borderRadius: wp('2%'),
-        borderColor: "#65E4D7",
+        borderColor: "#ABDFF6",
         borderWidth: wp('0.5%'),
         flexDirection: "row",
     },
@@ -144,19 +156,44 @@ const styles = StyleSheet.create({
         borderRadius: wp('7.5%') / 2,
         width: wp('7.5%'),
         height: wp('7.5%'),
-        backgroundColor: "white",
+        backgroundColor: "#FFFAF1",
         marginVertical: hp('2.5%'),
         marginLeft: -13,
-        borderColor: "#65E4D7",
+        borderColor: "#ABDFF6",
         borderWidth: wp('0.5%'),
     },
     applyEffect: {
-        flexDirection: "row",     
+        flexDirection: "row",
     },
-    FlatlistElement: {
+    FlatlistElement_after: {
         marginHorizontal: wp('8%'),
         marginVertical: hp('1%'),
         width: wp('50%'),
         flexDirection: "column",
+    },
+    FlatlistElement_before: {
+        marginHorizontal: wp('8%'),
+        marginVertical: hp('4%'),
+        width: wp('50%'),
+        flexDirection: "column",
+
+    },
+    TextStyle_before: {
+        color: "#00B1D2FF",
+        fontWeight: "bold",
+        fontSize: wp('4.5%'),
+        fontStyle: "italic"
+    },
+    TextStyle_after: {
+        color: "#00B1D2FF",
+        fontWeight: "800",
+        fontSize: wp('3.7%'),
+        fontStyle: "italic"
+    },
+    TextStyle_after_for_applyEffect: {
+        color: "#00B1D2FF",
+        fontWeight: "bold",
+        fontSize: wp('4.2%'),
+        fontStyle: "italic"
     }
 })

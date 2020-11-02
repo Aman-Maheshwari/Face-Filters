@@ -5,28 +5,47 @@ export default effects = [
                 effect: "pencilsketchBW",
                 tap: false,
                 InnerPropertyexist: true,
-                // background:"pencil-sketch-BW.jpg"
+                background:"pencil-sketch-BW.jpg",
+                stroke_size:0.01,
+                parameterStep:0.01,
+                maximumParameterValue:0.1,
+                parameterName:"Shade Factor"
             },
             {
                 id: 2,
                 title: "Water Color",
                 effect: "watercolour",
                 tap: false,
-                InnerPropertyexist: true
+                InnerPropertyexist: true,
+                background:"",
+                stroke_size:20,
+                parameterStep:1,
+                maximumParameterValue:100,
+                parameterName:"Stroke Size"
             },
             {
                 id: 3,
                 title: "Oil Paint",
                 effect: "oilpaint",
                 tap: false,
-                InnerPropertyexist: true
+                InnerPropertyexist: true,
+                background:"Oil_paint.jpg",
+                stroke_size:20,
+                parameterStep:1,
+                maximumParameterValue:100,
+                parameterName:"Stroke Size"
             },
             {
                 id: 4,
                 title: "Pointlissim",
                 effect: "pointlissim",
                 tap: false,
-                InnerPropertyexist: true
+                InnerPropertyexist: true,
+                background:"Pointlissim.jpg",
+                Brush_stroke_size:10,
+                parameterStep:1,
+                maximumParameterValue:20,
+                parameterName:"Brush Stroke"
             },
             {
                 id: 5,
@@ -34,20 +53,71 @@ export default effects = [
                 effect: "pencilsketchColor",
                 tap: false,
                 InnerPropertyexist: true,
-                // background:"pencil-sketch-Colour.jpg"
+                background:"pencil-sketch-Colour.jpg",
+                stroke_size:0.01,
+                parameterStep:0.01,
+                maximumParameterValue:0.1,
+                parameterName:"Shade Factor"
             },
             {
                 id: 6,
-                title: "Details",
-                effect: "details",
+                title: "glass Filter",
+                effect: "glass",
                 tap: false,
-                InnerPropertyexist: true
+                InnerPropertyexist: false,
+                background:"",
+                stroke_size:0,
+                parameterStep:0,
+                maximumParameterValue:0,
+                parameterName:"NA"
             },
             {
                 id: 7,
+                title: "Dog Filter",
+                effect: "dog",
+                tap: false,
+                InnerPropertyexist: false,
+                background:"",
+                stroke_size:0,
+                parameterStep:0,
+                maximumParameterValue:0,
+                parameterName:"NA"
+            },
+            {
+                id: 8,
+                title: "Cat Filter",
+                effect: "cat",
+                tap: false,
+                InnerPropertyexist: false,
+                background:"",
+                stroke_size:0,
+                parameterStep:0,
+                maximumParameterValue:0,
+                parameterName:"NA"
+            },
+            {
+                id: 9,
+                title: "Details",
+                effect: "details",
+                tap: false,
+                InnerPropertyexist: true,
+                background:"",
+                stroke_size:20,
+                parameterStep:1,
+                maximumParameterValue:100,
+                parameterName:"Stroke Size"
+            },
+            {
+                id: 10,
                 title: "Edge Preserving",
                 effect: "edgePreserving",
                 tap: false,
-                InnerPropertyexist: true
-            }
+                InnerPropertyexist: true,
+                background:"",
+                stroke_size:20,
+                parameterStep:1,
+                maximumParameterValue:100,
+                parameterName:"Stroke Size"
+            },
+
         ]

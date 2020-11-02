@@ -22,12 +22,42 @@ export default class Appp extends React.Component {
             width: null,
             height: null,
             ApiResponse: false,
-            Haveimage: false
+            Haveimage: false,
+            networkError:false,
+            bg_image_array:[
+                require("../Assets/pencil-sketch-BW.jpg"),
+                require("../Assets/watercolour.png"),
+                require("../Assets/Oil_paint.jpg"),
+                require("../Assets/Pointlissim.jpg"),
+                require("../Assets/pencil-sketch-Colour.jpg"),
+                // require("../Assets/"),
+                // require("../Assets/"),
+                // require("../Assets/"),
+                // require("../Assets/"),
+                // require("../Assets/")
+            ]
         }
     }
 
-    callFunctionAPI = (imageuri, effect) => {
-        console.log("effect = ", effect);
+    componentDidMount(){
+        this.didFocusListener = this.props.navigation.addListener(
+            'focus',
+            () => {   
+                this.setState({
+                imgurii: '',
+                width: null,
+                height: null,
+                ApiResponse: false,
+                Haveimage: false,
+                networkError:false
+            }) },
+          );
+          
+          
+        }
+
+    callFunctionAPI = (imageuri, effect,params) => {
+        // console.log("effect = ", effect);
         ImgToBase64.getBase64String(imageuri)
             .then(async (base64String) => {
                 // console.log(base64String);       
@@ -39,29 +69,35 @@ export default class Appp extends React.Component {
                     },
                     body: JSON.stringify({
                         base64String: base64String,
-                        width: 100,
-                        height: 100
+                        parameter:params
                     })
                 }).then(response => response.blob())
                     .then(images => {
-                        console.log("inside", images);
+                        // console.log("inside", images);
                         const fileReaderInstance = new FileReader();
                         fileReaderInstance.readAsDataURL(images);
                         fileReaderInstance.onload = () => {
                             this.setState({
                                 imgurii: fileReaderInstance.result,
-                                ApiResponse: true
+                                ApiResponse: true,
+                                networkError:false
                             })
                         }
                     });
             })
-            .catch(err => console.log(err)
+            .catch(err => {
+                console.log("this is error",err)
+                this.setState({
+                    networkError:true,
+                    ApiResponse:true
+                })
+            }
             );
     }
 
 
-    getImage = (effect, select = '') => {
-        console.log("inside get");
+    getImage = (effect, select = '' ,parameter) => {
+        // console.log("inside get");
         var fetchImage = new Promise((resolve, reject) => {
             const options = {
                 storageOptions: {
@@ -75,7 +111,7 @@ export default class Appp extends React.Component {
             //if user wants to click photo using camera ...
 
             if (select === 'camera') {
-                console.log("inside camera");
+                // console.log("inside camera");
 
                 ImagePicker.launchCamera(options, (response) => {
                     // Same code as in above section!
@@ -127,7 +163,7 @@ export default class Appp extends React.Component {
                     width: width,
                     height: height,
                 });                
-                this.callFunctionAPI(result, effect)
+                this.callFunctionAPI(result, effect ,parameter)
             }); 
             // this.callFunctionAPI(result, effect)
         }).catch((error) => {
@@ -136,25 +172,32 @@ export default class Appp extends React.Component {
     }
 
     render() {
-        var effect = this.props.route.params.effect === undefined ? 'watercolour' : this.props.route.params.effect
-        // var background = this.props.route.params.bg_image === undefined ? '' : this.props.route.params.bg_image
-        console.log(effect);
-
+        var effect, background, id, parameter
+        try {
+            effect = this.props.route.params.effect
+            background = this.props.route.params.bg_image
+            id = this.props.route.params.id
+            parameter =this.props.route.params.parameter
+        } catch (error) {
+            effect = 'watercolour'
+            background = ""
+            id = 2
+            parameter = 3
+        }
+        let image  = this.state.bg_image_array[id-1];
         return (
             <View style={{ flex: 1 }}>
-                {/* <ImageBackground source={require('../Assets/' + background)} style={styles.backgroundImage} /> */}
+                <ImageBackground source={image} style={styles.backgroundImage} />
                 {this.state.Haveimage === false ?
                     <View style={{ alignSelf: "center", marginVertical: 150 }}>
-                        {console.log("inside if ")
-                        }
                         <TouchableOpacity onPress={() => {
-                            this.getImage(effect, 'camera')
+                            this.getImage(effect, 'camera',parameter)
                         }}
                             style={{
                                 height: 150, width: 150, borderRadius: 150 / 2
                             }}
                         >
-                            <View style={{ height: 150, width: 150, borderRadius: 150 / 2, backgroundColor: "#A7F7EF", marginBottom: 20 }}>
+                            <View style={{ height: 150, width: 150, borderRadius: 150 / 2, backgroundColor: "#FFd662FF", marginBottom: 20 }}>
                                 <Text style={{ color: "white", marginHorizontal: 25, marginVertical: 55, fontSize: 25 }}> Capture</Text>
                             </View>
                         </TouchableOpacity>
@@ -164,26 +207,25 @@ export default class Appp extends React.Component {
                                 height: 150, width: 150, borderRadius: 150 / 2
                             }}
                             onPress={() => {
-                                this.getImage(effect, '')
+                                this.getImage(effect, '' , parameter)
                             }}
                         >
-                            <View style={{ height: 150, width: 150, borderRadius: 150 / 2, backgroundColor: "#F4A8EE", marginTop: 20 }}>
+                            <View style={{ height: 150, width: 150, borderRadius: 150 / 2, backgroundColor: "#00539CFF", marginTop: 20 }}>
                                 <Text style={{ color: "white", marginHorizontal: 25, marginVertical: 55, fontSize: 25 }}> Choose</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
                     :
                     <View style={{ height: 1000 }}>
-                        {console.log("inside else")}
                         <View style={{ flex: 0.1, alignSelf: "center", marginVertical: 10, flexDirection: "row" }}>
                             <TouchableOpacity onPress={() => {
-                                this.getImage(effect, 'camera')
+                                this.getImage(effect, 'camera' , parameter)
                             }}
                                 style={{
                                     height: 90, width: 90, borderRadius: 90 / 2
                                 }}
                             >
-                                <View style={{ height: 90, width: 90, borderRadius: 90 / 2, backgroundColor: "#A7F7EF", marginRight: 20 }}>
+                                <View style={{ height: 90, width: 90, borderRadius: 90 / 2, backgroundColor: "#FFd662FF", marginRight: 20 }}>
                                     <Text style={{ color: "white", marginHorizontal: 15, marginVertical: 15, fontSize: 17 }}> Capture</Text>
                                 </View>
                             </TouchableOpacity>
@@ -194,10 +236,10 @@ export default class Appp extends React.Component {
                                     height: 90, width: 90, borderRadius: 90 / 2
                                 }}
                                 onPress={() => {
-                                    this.getImage(effect, '')
+                                    this.getImage(effect, '' ,parameter)
                                 }}
                             >
-                                <View style={{ height: 90, width: 90, borderRadius: 90 / 2, backgroundColor: "#F4A8EE", marginLeft: 20 }}>
+                                <View style={{ height: 90, width: 90, borderRadius: 90 / 2, backgroundColor: "#00539CFF", marginLeft: 20 }}>
                                     <Text style={{ color: "white", marginHorizontal: 15, marginVertical: 15, fontSize: 17 }}> Choose</Text>
                                 </View>
                             </TouchableOpacity>
@@ -205,15 +247,20 @@ export default class Appp extends React.Component {
 
                         <View style={{ flex: 0.9, }}>
                             {this.state.ApiResponse == true ?
-                                <Image source={{ uri: this.state.imgurii, }} style={{ height: 350, width: 350 }} />
+                                <View>
+                                {this.state.networkError == false ?
+                                    <Image source={{ uri: this.state.imgurii, }} style={styles.DisplayImage} />
+                                 : 
+                                    <Text style = {{textAlign:"center",marginVertical:hp('12%')}}>Oopss!! Please Check Your Internet Connection!!</Text>
+                                 }    
+                                </View>
                                 :
-                                <View style={{ height: 350, width: 350 }}>
+                                <View style={styles.DisplayLoader}>
                                     <ResponseWaitLoader />
                                 </View>
                             }
-
+                            
                         </View>
-
                     </View>
                 }
             </View>
@@ -230,5 +277,27 @@ const styles = StyleSheet.create({
         alignItems: "center",
         opacity: 0.7
     },
+    DisplayImage:{
+        height:hp('50%'), 
+        width: wp('85%'),
+        marginVertical:50,
+        marginHorizontal:30,
+        borderRadius:5,
+        borderWidth:5,
+        borderColor:"white",
+        // elevation:4
+
+    },
+    DisplayLoader:{
+        height:hp('50%'), 
+        width: wp('85%'),
+        marginVertical:50,
+        marginHorizontal:30,
+        borderRadius:4,
+        borderWidth:2,
+        borderColor:"white",
+        elevation:4,
+        backgroundColor:"#FFFFFF"
+    }
 })
 
