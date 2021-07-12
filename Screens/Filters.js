@@ -61,7 +61,7 @@ export default class Appp extends React.Component {
         ImgToBase64.getBase64String(imageuri)
             .then(async (base64String) => {
                 // console.log(base64String);       
-                var cartoon = await fetch('http://75ce880ca5ec.ngrok.io/' + effect, {
+                var cartoon = await fetch('http://e2f6c4e1d79d.ngrok.io/' + effect, {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',

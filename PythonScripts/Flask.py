@@ -9,8 +9,8 @@ import base64
 import matplotlib.pyplot as plt
 import sys
 from PIL import Image, ImageFilter, ImageChops
-from pytesseract import image_to_string
-import pytesseract
+# from pytesseract import image_to_string
+# import pytesseract
 import numpy
 import argparse
 import math
